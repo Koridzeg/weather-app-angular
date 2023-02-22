@@ -5,9 +5,14 @@ import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
+  MatDialogConfig
 } from '@angular/material/dialog';
+import { WeatherInfoComponent } from '../weather-info/weather-info.component';
+import { Overlay } from '@angular/cdk/overlay';
 
-declare var google: any;
+
+
+declare const google: any;
 
 interface MapClickEvent extends google.maps.MapMouseEvent {
   latLng: google.maps.LatLng;
@@ -70,13 +75,24 @@ export class MapComponent implements OnInit {
     this.mapInitializer();
   }
 
+  openWeatherDialog(data: OpenMeteoResponse) {
+    const dialogRef = this.dialog.open(WeatherInfoComponent, {
+      data: {
+        hourly: data.hourly,
+      },
+      panelClass: 'custom-dialog'
+    });
+    dialogRef.componentInstance.currentWeather = data.current_weather;
+    dialogRef.componentInstance.hourly = data.hourly
+
+  }
+  
+
   mapInitializer() {
     this.map = new google.maps.Map(document.getElementById('map'), {
       center: { lat: this.lat, lng: this.lng },
       zoom: this.zoom,
     });
-
-    const infowindow = new google.maps.InfoWindow();
 
     this.map.addListener('click', (event: MapClickEvent) => {
       if (this.marker) {
@@ -93,17 +109,7 @@ export class MapComponent implements OnInit {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${this.lat}&longitude=${this.lng}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m`;
 
       this.http.get<OpenMeteoResponse>(url).subscribe((data) => {
-        infowindow.setContent(
-          `<mat-card>
-          <mat-card-title> Weather Information </mat-card-title>
-          <mat-card-content>
-          <p> Temperature : ${data.current_weather.temperature}</p> 
-          <p> Wind Speed : ${data.current_weather.windspeed} </p>
-          <button mat-raised-button color="primary" (click)="showHourlyWeather()">Show Hourly Weather </button>
-          </mat-card-content>         
-          </mat-card>`
-        );
-        infowindow.open(this.map, this.marker);
+        this.openWeatherDialog(data);
       });
     });
   }
