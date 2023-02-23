@@ -1,16 +1,7 @@
 import { Component, Input } from '@angular/core';
-
-export interface HourlyWeather {
-  time: string[];
-  temperature_2m: number[];
-  windspeed_10m: number[];
-}
+import { CurrentWeather, HourlyWeather } from '../types/types';
 
 
-export interface CurrentWeather {
-  temperature: number;
-  windspeed: number;
-}
 
 @Component({
   selector: 'app-weather-info',
@@ -48,7 +39,7 @@ export interface CurrentWeather {
 export class WeatherInfoComponent {
   @Input() hourly!: HourlyWeather;
   @Input() currentWeather!: CurrentWeather;
-  hours: any[] = [];
+  hours: string[] = [];
   showHourly = false;
 
   toggleHourly() {

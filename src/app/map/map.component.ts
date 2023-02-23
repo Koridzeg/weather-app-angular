@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 import {
   MatDialog,
   MatDialogRef,
@@ -8,37 +7,13 @@ import {
   MatDialogConfig
 } from '@angular/material/dialog';
 import { WeatherInfoComponent } from '../weather-info/weather-info.component';
-import { Overlay } from '@angular/cdk/overlay';
+import { MapClickEvent, Marker, OpenMeteoResponse } from '../types/types';
 
 
 
 declare const google: any;
 
-interface MapClickEvent extends google.maps.MapMouseEvent {
-  latLng: google.maps.LatLng;
-}
 
-interface OpenMeteoResponse {
-  current_weather: {
-    time: string;
-    temperature: number;
-    weathercode: number;
-    windspeed: number;
-    winddirection: number;
-  };
-  hourly: {
-    time: string[];
-    windspeed_10m: number[];
-    temperature_2m: number[];
-    relativehumidity_2m: number[];
-  };
-}
-
-interface Marker {
-  lat: number;
-  lng: number;
-  draggable: boolean;
-}
 
 @Component({
   selector: 'app-map',
@@ -61,7 +36,7 @@ export class MapComponent implements OnInit {
   zoom = 12;
   map!: google.maps.Map;
   marker!: google.maps.Marker;
-  hours: any[] = [];
+  hours: string[] = [];
   selectedMarker!: Marker;
   showHourly = true;
 
